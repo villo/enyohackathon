@@ -15,6 +15,13 @@ enyo.kind({
 						{kind: "roomListItem", name: "developers", content: "Developers", active: false, onRoomChange: "roomChange"},
 						{kind: "roomListItem", name: "user", content: "User Chat", active: false, onRoomChange: "roomChange"},
 					]},
+				]},
+				{classes: "well", style: "padding: 8px 0;", components: [
+					{tag: "ul", classes: "nav nav-list", components: [
+						{tag: "li", classes: "nav-header", content: "Users Online"},
+					]},
+					{tag: "ul", name: "userList", classes: "nav nav-list", components: [
+					]},
 				]}
 			]},
 			{classes: "span8", components: [
@@ -31,14 +38,27 @@ enyo.kind({
 		//Join the room that is already defined:
 		villo.chat.join({
 			room: this.room,
-			callback: enyo.bind(this, this.gotMessage)
+			callback: enyo.bind(this, this.gotMessage),
+			presence: {
+				enabled: true,
+				callback: enyo.bind(this, this.presenceHandler)
+			}
 		});
-		
+		//Load the last 5 messages, just to give them something to look at:
 		villo.chat.history({
 			room: this.room,
 			limit: 5,
 			callback: enyo.bind(this, this.gotHistory)
 		})
+	},
+	presenceHandler: function(inSender){
+		this.$.userList.destroyComponents();
+		for(var x in inSender.data.users){
+			if(inSender.data.users.hasOwnProperty(x)){
+				this.$.userList.createComponent({kind: "onlineListItem", content: inSender.data.users[x]})
+			}
+		}
+		this.$.userList.render();
 	},
 	gotHistory: function(inSender){
 		for(var x in inSender){
@@ -50,6 +70,10 @@ enyo.kind({
 	gotMessage: function(inSender){
 		this.$.messages.createComponent({kind: "chatMessage", username: inSender.username, content: inSender.message});
 		this.$.messages.render();
+		//Set scroll position:
+		this.$.messages.hasNode();
+		var msg = this.$.messages.node;
+		msg.scrollTop = msg.scrollHeight;
 	},
 	checkEnter: function(inSender, inEvent){
 		if(inEvent.keyCode === 13){
@@ -130,7 +154,9 @@ enyo.kind({
 	},
 	components: [
 		{classes: "pull-left", components: [
-			{classes: "thumbnail", style: "height: 32px; width: 32px; margin-right: 10px;"},
+			{classes: "thumbnail", style: "height: 32px; width: 32px; margin-right: 10px;", components: [
+				{tag: "img", name: "avatar"}
+			]},
 		]},
 		{classes: "", components: [
 			{tag: "span", name: "username", classes: "label", content: "Kesne"},
@@ -147,5 +173,23 @@ enyo.kind({
 			this.$.username.addClass("label-info");
 		}
 		this.$.message.setContent(this.content);
+		this.$.avatar.setAttribute("src", "https://api.villo.me/avatar.php?thumbnail=true&username=" + escape(this.username))
 	}
-})
+});
+
+
+enyo.kind({
+	name: "onlineListItem",
+	kind: "Control",
+	tag: "li",
+	published: {
+		content: ""
+	},
+	components: [
+		{tag: "a", name: "theUser"}
+	],
+	create: function(){
+		this.inherited(arguments);
+		this.$.theUser.setContent(this.content);
+	},
+});
