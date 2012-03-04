@@ -2,9 +2,8 @@ enyo.kind({
 	name: "App",
 	kind: "Control",
 	components: [
-		//{kind: "header", onPageChange: "pageChange"},
-		//{kind: "body", name: "Body", onLoggedIn: "bubbleLogin"}
-		{content: "It works!"}
+		{kind: "header"},
+		{kind: "body", name: "Body", onLoggedIn: "bubbleLogin"}
 	],
 	
 	pageChange: function(inSender, inEvent){
@@ -20,6 +19,7 @@ enyo.kind({
 			this.loggedIn();
 		}
 	},
+	
 	bubbleLogin: function(){
 		this.loggedIn();
 	},
