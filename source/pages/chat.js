@@ -3,20 +3,20 @@ enyo.Scroller.forceTouchScrolling = !enyo.Scroller.hasTouchScrolling();
 enyo.kind({
 	name: "chatPage",
 	kind: "Page",
-	rooms: ["general", "developers", "user"],
-	room: "general",
+	rooms: ["GENERAL", "DEVELOPERS", "USER"],
+	room: "GENERAL",
 	components: [
 		{classes: "row", components: [
 			{classes: "span4", components: [
 				{classes: "well", style: "padding: 8px 0;", components: [
 					{tag: "ul", classes: "nav nav-list", components: [
 						{tag: "li", classes: "nav-header", content: "Hackathon Rooms"},
-						{kind: "roomListItem", name: "general", content: "General Chat", active: true, onRoomChange: "roomChange"},
-						{kind: "roomListItem", name: "developers", content: "Developers", active: false, onRoomChange: "roomChange"},
-						{kind: "roomListItem", name: "user", content: "User Chat", active: false, onRoomChange: "roomChange"},
+						{kind: "roomListItem", name: "GENERAL", content: "General Chat", active: true, onRoomChange: "roomChange"},
+						{kind: "roomListItem", name: "DEVELOPERS", content: "Developers", active: false, onRoomChange: "roomChange"},
+						{kind: "roomListItem", name: "USER", content: "User Chat", active: false, onRoomChange: "roomChange"},
 					]},
 				]},
-				{classes: "well", style: "padding: 8px 0;", components: [
+				{classes: "well", style: "padding: 8px 0; max-height: 288px; overflow-y: auto; overflow-x: hidden;", components: [
 					{tag: "ul", classes: "nav nav-list", components: [
 						{tag: "li", classes: "nav-header", content: "Users Online"},
 					]},
@@ -34,7 +34,21 @@ enyo.kind({
 			]},
 		]},
 	],
+	changeRoom: function(){
+		//Just leave all of the current rooms:
+		villo.chat.leaveAll();
+		//Get rid of everything:
+		this.$.messages.destroyComponents();
+		this.$.userList.destroyComponents();
+		//Join new chat room:
+		this.joinItUp();
+		//Render it again:
+		this.render();
+	},
 	activate: function(){
+		this.joinItUp();
+	},
+	joinItUp: function(){
 		//Join the room that is already defined:
 		villo.chat.join({
 			room: this.room,
@@ -105,6 +119,8 @@ enyo.kind({
 				}
 			}
 		}
+		this.room = inSender.name;
+		this.changeRoom();
 	}
 });
 
