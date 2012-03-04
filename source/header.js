@@ -45,10 +45,10 @@ enyo.kind({
 	
 	logout: function(){
 		if(villo.user.logout() === true){
-			window.location = window.location;
+			window.location.reload();
 		}else{
 			//What happened?!
-			window.location = window.location;
+			window.location.reload();
 		}
 	},
 	

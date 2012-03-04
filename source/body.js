@@ -1,24 +1,20 @@
 enyo.kind({
 	name: "body",
-	kind: "Control",
-	events: {
-		onLoggedIn: ""
-	},
-	
+	kind: "Control",	
 	components: [
 		{classes: "container", components: [
 			{kind: "Book", name: "Book", components: [
 				{kind: "chatPage", name: "chatPage", lazy: false}
 			]},
 			//This isn't part of our "book" because we want it to show above the content.
-			{kind: "loginPage", name: "loginPage", onLoggedIn: "bubbleLogin"},
+			{kind: "loginPage", name: "loginPage"},
 			
 			{kind: "footer"}
 		]}
 	],
 	
-	bubbleLogin: function(){
-		this.bubble("onLoggedIn");
+	loggedIn: function(){
+		this.$.chatPage.activate();
 	},
 	
 	create: function(){

@@ -1,4 +1,6 @@
 enyo.depends(
+	"lib/enyo/enyo-scroller.css",
+	
 	"source/book/",
 	"source/utils/",
 	"source/pages/",

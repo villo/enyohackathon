@@ -26,5 +26,6 @@ enyo.kind({
 	
 	loggedIn: function(){
 		this.$.header.loggedIn();
+		this.$.Body.loggedIn();
 	}
 });

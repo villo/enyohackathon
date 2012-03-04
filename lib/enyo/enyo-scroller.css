@@ -1,0 +1,24 @@
+
+/* ../touch/Scroller.css */
+
+.enyo-scroller {
+	overflow: hidden;
+}
+
+.enyo-touch-scroller {
+	overflow: hidden;
+}
+
+.enyo-fitter {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.enyo-unselectable {
+	cursor: default;
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+}
