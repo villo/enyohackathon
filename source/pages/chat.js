@@ -6,7 +6,7 @@ enyo.kind({
 	rooms: ["GENERAL", "DEVELOPERS", "USER"],
 	room: "GENERAL",
 	components: [
-		{classes: "row", components: [
+		{classes: "row", onOpenProfile: "openProfile", components: [
 			{classes: "span4", components: [
 				{classes: "well", style: "padding: 8px 0;", components: [
 					{tag: "ul", classes: "nav nav-list", components: [
@@ -33,7 +33,57 @@ enyo.kind({
 				]}
 			]},
 		]},
+		{kind: "Modal", keyboard: true, components: [
+			{kind: "ModalHeader", closeButton: true, content: "Viewing Profile"},
+			{kind: "ModalBody", components: [
+				{classes: "row-fluid", components: [
+					{classes: "span4", name: "left", components: [
+						//Avatar:
+						{classes: "thumbnail", components: [
+							{tag: "img", name: "profileAvatar"}
+						]}
+					]},
+					//Right Side:
+					{classes: "span8", name: "right", components: [						
+						{tag: "h1", content: "", name: "profileUsername"},
+						{content: "", name: "profileFullName"},
+						{content: "<br />"},
+						{classes: "well", name: "profileBio", content: ""},
+						{content: "", name: "profileLocation"},
+					]}
+				]}
+			]},
+			{kind: "ModalFooter", components: [
+				{classes: "btn", content: "Close", onclick: "closeProfile"}
+			]},
+		]}
 	],
+	/*
+	 * Profile
+	 */
+	closeProfile: function(){
+		this.$.modal.hide();
+	},
+	openProfile: function(inSender, inEvent){
+		villo.profile.get({
+			username: inEvent,
+			callback: enyo.bind(this, this.gotProfile)
+		});
+		this.$.modal.show();
+	},
+	gotProfile: function(inSender){
+		var profile = inSender.profile[0];
+
+		this.$.profileUsername.setContent(profile.username);
+		this.$.profileFullName.setContent((profile.firstname || "") + " " + (profile.lastname || ""));
+		this.$.profileLocation.setContent("Location: " + profile.location);
+		this.$.profileBio.setContent(profile.status.replace(/\n/gi, "<br />") || "");
+		
+		this.$.profileAvatar.setAttribute("src", "https://api.villo.me/avatar.php?small=true&username=" + profile.username);
+	},
+	/*
+	 * Chat + Presence
+	 */
 	changeRoom: function(){
 		//Just leave all of the current rooms:
 		villo.chat.leaveAll();
@@ -175,12 +225,15 @@ enyo.kind({
 			]},
 		]},
 		{classes: "", components: [
-			{tag: "span", name: "username", classes: "label", content: "Kesne"},
-			{content: "How is everybody doing today?", name: "message"}
+			{tag: "a", name: "username", onclick: "propItUp", classes: "label", content: "Kesne"},
+			{content: "", name: "message"}
 		]},
 		//Line break to keep things from breaking
 		{content: "<br />"}
 	],
+	propItUp: function(){
+		this.bubble("onOpenProfile", this.username);
+	},
 	create: function(){
 		this.inherited(arguments);
 		//Update fields:
@@ -200,6 +253,12 @@ enyo.kind({
 	tag: "li",
 	published: {
 		content: ""
+	},
+	handlers: {
+		onclick: "bubbleItUp"
+	},
+	bubbleItUp: function(){
+		this.bubble("onOpenProfile", this.content);
 	},
 	components: [
 		{tag: "a", name: "theUser"}
